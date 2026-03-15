@@ -1,0 +1,88 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--gray-50);
+}
+
+.header {
+  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 10;
+}
+
+.headerInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px 12px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.slogan {
+  font-size: 13px;
+  opacity: 0.85;
+  margin: 4px 0 0;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.nav {
+  display: flex;
+  background: #fff;
+  border-top: 1px solid var(--gray-200);
+  flex-shrink: 0;
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.navBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.navBtn:hover {
+  color: var(--brand-blue);
+}
+
+.navBtn span:first-child {
+  font-size: 18px;
+}
+
+.navBtnActive {
+  color: var(--brand-blue);
+  font-weight: 500;
+}
+
+.navBtnActive::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--brand-blue);
+  border-radius: 1px;
+  margin-top: 2px;
+}

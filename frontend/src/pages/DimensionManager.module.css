@@ -1,0 +1,245 @@
+.page {
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dashboard */
+.dashboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dashboardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin: 0;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  text-align: center;
+  background: var(--gray-50);
+  border-radius: 8px;
+  padding: 16px 12px;
+}
+
+.statNum {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gray-800);
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--gray-400);
+  margin-top: 4px;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+}
+
+.categoryBar {
+  background: var(--gray-50);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.categoryInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.categoryName {
+  font-size: 13px;
+  color: var(--gray-600);
+  flex: 1;
+}
+
+.categoryCount {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+/* Discovery hint */
+.discoveryHint {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #92400e;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.discoveryHint:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.discoveryIcon {
+  font-size: 20px;
+  color: #f59e0b;
+}
+
+/* Dimension list */
+.dimensionList {
+  margin-bottom: 24px;
+}
+
+.collapseLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapseLabelText {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.collapseLabelCount {
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-left: auto;
+}
+
+.dimCards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dimCard {
+  border-radius: 8px !important;
+  transition: box-shadow 0.15s;
+}
+
+.dimCardPending {
+  border-left: 3px solid #f59e0b !important;
+}
+
+.dimCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dimCardName {
+  font-size: 14px;
+  color: var(--gray-700);
+  flex: 1;
+  font-weight: 500;
+}
+
+.dimCardStatus {
+  font-size: 14px;
+}
+
+.dimCardDir {
+  font-size: 12px;
+}
+
+.dimCardDetail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.dimCardDesc {
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+
+.dimCardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-bottom: 12px;
+}
+
+.dimCardActions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Edit drawer */
+.editMeta {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 2;
+}
+
+/* Review modal */
+.reviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewSection h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin: 0 0 8px;
+}
+
+.reviewText {
+  background: var(--gray-50);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.reviewTextNew {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}

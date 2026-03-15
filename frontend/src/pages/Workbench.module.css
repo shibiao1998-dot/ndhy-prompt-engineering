@@ -1,0 +1,216 @@
+.emptyState {
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 左侧主区域 */
+.mainArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 上方大面积留白+居中标题 */
+.heroSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.heroTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  color: var(--gray-400);
+  margin: 0;
+}
+
+/* 底部输入栏（参考GPT） */
+.inputDock {
+  padding: 0 40px 32px;
+  display: flex;
+  justify-content: center;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inputBar {
+  width: 100%;
+  max-width: 680px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.inputBar:focus-within {
+  border-color: var(--brand-blue);
+  box-shadow: 0 4px 20px rgba(27, 101, 169, 0.12);
+}
+
+.inputField {
+  flex: 1;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: none;
+  background: transparent !important;
+}
+
+.inputField:focus {
+  box-shadow: none !important;
+}
+
+.sendBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.inputHintBelow {
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray-300);
+  margin-top: 8px;
+}
+
+/* 右侧维度竖条 */
+.dimensionSidebar {
+  width: 180px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border-left: 1px solid var(--gray-100);
+  padding: 16px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: fadeInSide 0.6s ease-out 0.3s backwards;
+}
+
+@keyframes fadeInSide {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebarTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 4px;
+  margin-bottom: 2px;
+}
+
+.sidebarStats {
+  font-size: 11px;
+  color: var(--gray-300);
+  padding: 0 4px;
+  margin-bottom: 6px;
+}
+
+.sidebarStatNum {
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+
+.dimCard {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: transparent;
+  cursor: default;
+  transition: all 0.2s ease;
+  animation: fadeInCard 0.3s ease-out backwards;
+}
+
+.dimCard:hover {
+  background: var(--gray-50);
+}
+
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dimCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.dimCardName {
+  font-size: 11px;
+  color: var(--gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.dimCardBar {
+  height: 2px;
+  background: var(--gray-100);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.dimCardBarFill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.8s ease;
+}
+
+.dimCardStat {
+  font-size: 10px;
+  color: var(--gray-300);
+  margin-top: 2px;
+}
+
+/* Conversation layout */
+.conversationLayout {
+  display: flex;
+  height: 100%;
+}
+
+.chatPanel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--gray-50);
+}

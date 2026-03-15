@@ -1,0 +1,17 @@
+# Prompt Engineering System v2
+# 华渔提示词工程 · AI设计师
+
+node_modules/
+dist/
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.env
+.venv
+backend/data/
+backend/static/
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+*.log
