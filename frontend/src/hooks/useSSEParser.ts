@@ -1,11 +1,11 @@
 import { useCallback, useRef } from 'react'
-import type { SSEMetadata } from '../types'
 
 interface SSECallbacks {
-  onMetadata: (metadata: SSEMetadata) => void
   onToken: (content: string) => void
   onDone: () => void
   onError: (error: Error) => void
+  onMetadata?: (data: { conversation_id: string }) => void
+  onStatus?: (content: string) => void
 }
 
 export function useSSEParser() {
@@ -38,18 +38,20 @@ export function useSSEParser() {
           try {
             const data = JSON.parse(jsonStr)
             if (data.type === 'metadata') {
-              callbacks.onMetadata(data.metadata)
+              callbacks.onMetadata?.({ conversation_id: data.conversation_id })
+            } else if (data.type === 'status') {
+              callbacks.onStatus?.(data.content)
             } else if (data.type === 'token') {
               callbacks.onToken(data.content)
             } else if (data.type === 'done') {
               callbacks.onDone()
               return
             } else if (data.type === 'error') {
-              callbacks.onError(new Error(data.message || 'Stream error'))
+              callbacks.onError(new Error(data.content || 'Stream error'))
               return
             }
           } catch {
-            // skip malformed JSON lines
+            // skip malformed JSON
           }
         }
       }

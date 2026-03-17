@@ -1,14 +1,16 @@
 import { Routes, Route } from 'react-router-dom'
 import AppLayout from './components/Layout'
-import Workbench from './pages/Workbench'
-import DimensionManager from './pages/DimensionManager'
+import Home from './pages/Home'
+import Chat from './pages/Chat'
+import Dimensions from './pages/Dimensions'
 
 function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Workbench />} />
-        <Route path="/dimensions" element={<DimensionManager />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/chat/:id" element={<Chat />} />
+        <Route path="/dimensions" element={<Dimensions />} />
       </Route>
     </Routes>
   )

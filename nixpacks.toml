@@ -1,0 +1,21 @@
+# Nixpacks config for Railway
+# Mixed project: Node.js (frontend build) + Python (backend runtime)
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "python311", "gcc"]
+
+[phases.install]
+cmds = [
+  "cd frontend && npm install",
+  "cd backend && pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+  "cd frontend && npm run build",
+  "rm -rf backend/static && cp -r frontend/dist backend/static",
+  "cd backend && python import_from_md.py"
+]
+
+[start]
+cmd = "cd backend && python -u -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --timeout-keep-alive 1800"

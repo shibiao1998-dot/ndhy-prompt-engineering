@@ -14,16 +14,12 @@ CREATE TABLE IF NOT EXISTS dimensions (
   category TEXT NOT NULL,
   category_name TEXT,
   description TEXT,
-  pending_description TEXT,
+  quality_role TEXT,
   data_source TEXT,
   update_frequency TEXT,
-  direction TEXT DEFAULT 'positive',
-  priority INTEGER DEFAULT 2,
-  last_updated_at TIMESTAMP,
-  review_status TEXT DEFAULT 'approved',
-  reviewer TEXT,
-  reviewed_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  source_explanation TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 对话表
@@ -31,6 +27,7 @@ CREATE TABLE IF NOT EXISTS conversations (
   id TEXT PRIMARY KEY,
   title TEXT,
   task_type TEXT,
+  aihub_conversation_id TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -67,7 +64,7 @@ async def get_db() -> aiosqlite.Connection:
     db = await aiosqlite.connect(DB_PATH)
     db.row_factory = aiosqlite.Row
     await db.execute("PRAGMA journal_mode=WAL")
-    await db.execute("PRAGMA foreign_keys=ON")
+    await db.execute("PRAGMA foreign_keys=OFF")
     return db
 
 
@@ -76,6 +73,11 @@ async def init_db():
     db = await get_db()
     try:
         await db.executescript(SCHEMA)
+        # Migration: add aihub_conversation_id column if missing
+        try:
+            await db.execute("ALTER TABLE conversations ADD COLUMN aihub_conversation_id TEXT")
+        except Exception:
+            pass  # Column already exists
         await db.commit()
     finally:
         await db.close()

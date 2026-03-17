@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: ndhy-prompt-engineering
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 1800
+    envVars:
+      - key: AIHUB_API_URL
+        value: https://ai-hub-api.aiae.ndhy.com
+      - key: AIHUB_PROJECT_KEY
+        sync: false
+      - key: AIHUB_SDP_APP_ID
+        value: b4fb92a0-af7f-49c2-b270-8f62afac1133
+      - key: AIHUB_BOT_ID
+        sync: false
+      - key: AIHUB_WORKFLOW_BOT_ID
+        sync: false
+      - key: AIHUB_ANALYZE_BOT_ID
+        sync: false
+      - key: BTS_API_URL
+        value: https://ucbts.101.com
+      - key: BTS_APP_NAME
+        value: ai-ceo-poc
+      - key: BTS_APP_SECRET
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: NODE_VERSION
+        value: "20"

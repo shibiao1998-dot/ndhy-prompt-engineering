@@ -5,7 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8000'
-    }
-  }
+      '/api': {
+        target: 'http://localhost:8000',
+        // 30 min timeout for chat (dimension analysis + chatflow can take a while)
+        timeout: 30 * 60 * 1000,
+      },
+    },
+  },
 })

@@ -19,6 +19,7 @@ class DimensionBase(BaseModel):
     update_frequency: Optional[str] = None
     direction: str = "positive"
     priority: int = 2
+    raw_content: Optional[str] = None
 
 
 class DimensionCreate(DimensionBase):
@@ -29,11 +30,20 @@ class DimensionUpdate(BaseModel):
     name: Optional[str] = None
     category: Optional[str] = None
     category_name: Optional[str] = None
-    description: Optional[str] = None  # goes to pending_description
+    description: Optional[str] = None
+    quality_role: Optional[str] = None
     data_source: Optional[str] = None
     update_frequency: Optional[str] = None
+    source_explanation: Optional[str] = None
     direction: Optional[str] = None
     priority: Optional[int] = None
+    raw_content: Optional[str] = None
+
+
+class WorkflowRequest(BaseModel):
+    """Request body for triggering dimension update workflow."""
+    dimension_id: str
+    dimension_input: str  # Concatenated fields sent to workflow
 
 
 class DimensionResponse(BaseModel):
@@ -52,6 +62,7 @@ class DimensionResponse(BaseModel):
     reviewer: Optional[str] = None
     reviewed_at: Optional[str] = None
     created_at: Optional[str] = None
+    raw_content: Optional[str] = None
 
 
 # ─── Review ──────────────────────────────────────────────────

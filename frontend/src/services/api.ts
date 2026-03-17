@@ -1,11 +1,4 @@
-import type {
-  Dimension,
-  DimensionStats,
-  Conversation,
-  Message,
-  Engine,
-  ReviewPayload,
-} from '../types'
+import type { Conversation, Message, Dimension, DimensionUpdate, Category } from '../types'
 
 const BASE = '/api'
 
@@ -21,47 +14,8 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return res.json()
 }
 
-// Dimensions
-export async function getDimensions(category?: string): Promise<Dimension[]> {
-  const params = category ? `?category=${encodeURIComponent(category)}` : ''
-  return request<Dimension[]>(`/dimensions${params}`)
-}
+// ─── Conversations ────────────────────────────────────────────
 
-export async function getDimension(id: string): Promise<Dimension> {
-  return request<Dimension>(`/dimensions/${id}`)
-}
-
-export async function createDimension(data: Partial<Dimension>): Promise<Dimension> {
-  return request<Dimension>('/dimensions', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  })
-}
-
-export async function updateDimension(id: string, data: Partial<Dimension>): Promise<Dimension> {
-  return request<Dimension>(`/dimensions/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  })
-}
-
-export async function deleteDimension(id: string): Promise<void> {
-  await request<unknown>(`/dimensions/${id}`, { method: 'DELETE' })
-}
-
-export async function reviewDimension(id: string, payload: ReviewPayload): Promise<Dimension> {
-  return request<Dimension>(`/dimensions/${id}/review`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  })
-}
-
-// Stats
-export async function getDimensionStats(): Promise<DimensionStats> {
-  return request<DimensionStats>('/stats/dimensions')
-}
-
-// Conversations
 export async function createConversation(title?: string): Promise<Conversation> {
   return request<Conversation>('/conversations', {
     method: 'POST',
@@ -69,24 +23,15 @@ export async function createConversation(title?: string): Promise<Conversation> 
   })
 }
 
-export async function getConversationHistory(conversationId: string): Promise<Message[]> {
-  return request<Message[]>(`/chat/${conversationId}/history`)
+export async function getConversationHistory(conversationId: string): Promise<{
+  conversation: Conversation
+  messages: Message[]
+}> {
+  return request(`/chat/${conversationId}/history`)
 }
 
-// Engines
-export async function getEngines(): Promise<Engine[]> {
-  return request<Engine[]>('/engines')
-}
+// ─── Chat SSE ─────────────────────────────────────────────────
 
-// Prompt
-export async function adaptPrompt(promptText: string, engineId: string): Promise<{ adapted_prompt: string; engine: Engine }> {
-  return request<{ adapted_prompt: string; engine: Engine }>('/prompt/adapt', {
-    method: 'POST',
-    body: JSON.stringify({ prompt_text: promptText, engine_id: engineId }),
-  })
-}
-
-// SSE Chat - returns a ReadableStream reader
 export async function sendChatMessage(
   conversationId: string,
   message: string,
@@ -101,4 +46,64 @@ export async function sendChatMessage(
     throw new Error(`Chat API Error ${res.status}: ${error}`)
   }
   return res
+}
+
+// ─── Dimensions ──────────────────────────────────────────────
+
+export async function getCategories(): Promise<Category[]> {
+  return request<Category[]>('/dimensions/categories')
+}
+
+export async function getDimensions(category?: string): Promise<Dimension[]> {
+  const url = category ? `/dimensions?category=${encodeURIComponent(category)}` : '/dimensions'
+  return request<Dimension[]>(url)
+}
+
+export async function getDimension(id: string): Promise<Dimension> {
+  return request<Dimension>(`/dimensions/${id}`)
+}
+
+export async function updateDimension(id: string, data: DimensionUpdate): Promise<Dimension> {
+  return request<Dimension>(`/dimensions/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteDimension(id: string): Promise<{ message: string }> {
+  return request<{ message: string }>(`/dimensions/${id}`, { method: 'DELETE' })
+}
+
+export async function triggerDimensionWorkflow(
+  dimensionId: string,
+  dimensionInput: string,
+): Promise<Dimension> {
+  // Workflow may take up to 20 minutes; use AbortController for timeout
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 20 * 60 * 1000) // 20 min
+
+  try {
+    const res = await fetch(`${BASE}/dimensions/${dimensionId}/update-via-workflow`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dimension_id: dimensionId,
+        dimension_input: dimensionInput,
+      }),
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+
+    if (!res.ok) {
+      const error = await res.text()
+      throw new Error(`API Error ${res.status}: ${error}`)
+    }
+    return res.json()
+  } catch (err) {
+    clearTimeout(timeoutId)
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error('Workflow 执行超时（20分钟），请稍后重试')
+    }
+    throw err
+  }
 }
