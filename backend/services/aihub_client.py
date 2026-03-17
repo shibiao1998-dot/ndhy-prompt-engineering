@@ -26,12 +26,12 @@ logger = logging.getLogger(__name__)
 
 # ── Config from environment ──────────────────────────────────────────────
 
-AIHUB_API_URL = os.getenv("AIHUB_API_URL", "https://ai-hub-api.aiae.ndhy.com")
-AIHUB_PROJECT_KEY = os.getenv("AIHUB_PROJECT_KEY", "")
-AIHUB_SDP_APP_ID = os.getenv("AIHUB_SDP_APP_ID", "b4fb92a0-af7f-49c2-b270-8f62afac1133")
-AIHUB_BOT_ID = os.getenv("AIHUB_BOT_ID", "")  # The chatflow bot ID
-AIHUB_WORKFLOW_BOT_ID = os.getenv("AIHUB_WORKFLOW_BOT_ID", "")  # Workflow bot ID (dimension update)
-AIHUB_ANALYZE_BOT_ID = os.getenv("AIHUB_ANALYZE_BOT_ID", "")  # Workflow bot ID (dimension analysis)
+AIHUB_API_URL = os.getenv("AIHUB_API_URL", "https://ai-hub-api.aiae.ndhy.com").strip()
+AIHUB_PROJECT_KEY = os.getenv("AIHUB_PROJECT_KEY", "").strip()
+AIHUB_SDP_APP_ID = os.getenv("AIHUB_SDP_APP_ID", "b4fb92a0-af7f-49c2-b270-8f62afac1133").strip()
+AIHUB_BOT_ID = os.getenv("AIHUB_BOT_ID", "").strip()  # The chatflow bot ID
+AIHUB_WORKFLOW_BOT_ID = os.getenv("AIHUB_WORKFLOW_BOT_ID", "").strip()  # Workflow bot ID (dimension update)
+AIHUB_ANALYZE_BOT_ID = os.getenv("AIHUB_ANALYZE_BOT_ID", "").strip()  # Workflow bot ID (dimension analysis)
 
 # Log config at import time
 logger.info(f"[AIhub Config] API URL: {AIHUB_API_URL}")
@@ -39,9 +39,9 @@ logger.info(f"[AIhub Config] Chatflow Bot ID: {AIHUB_BOT_ID}")
 logger.info(f"[AIhub Config] Workflow Bot ID: {AIHUB_WORKFLOW_BOT_ID}")
 logger.info(f"[AIhub Config] Analyze Bot ID: {AIHUB_ANALYZE_BOT_ID}")
 
-BTS_API_URL = os.getenv("BTS_API_URL", "https://ucbts.101.com")
-BTS_APP_NAME = os.getenv("BTS_APP_NAME", "ai-ceo-poc")
-BTS_APP_SECRET = os.getenv("BTS_APP_SECRET", "")
+BTS_API_URL = os.getenv("BTS_API_URL", "https://ucbts.101.com").strip()
+BTS_APP_NAME = os.getenv("BTS_APP_NAME", "ai-ceo-poc").strip()
+BTS_APP_SECRET = os.getenv("BTS_APP_SECRET", "").strip()
 
 # Pre-cached token (optional, avoids initial BTS call)
 _cached_token: Optional[str] = os.getenv("BTS_TOKEN")
