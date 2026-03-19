@@ -33,13 +33,15 @@
         .tag-green { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
         .tag-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
         .tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
-        .stat-card { text-align: center; padding: 16px; }
-        .stat-card h4 { font-size: 14px; color: #666; margin-bottom: 16px; font-weight: 600; }
-        .stat-compare { display: flex; justify-content: center; align-items: center; gap: 32px; }
-        .stat-item { text-align: center; }
-        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
-        .stat-suffix { font-size: 12px; color: #999; display: block; margin-top: 4px; }
-        .stat-divider { color: #ddd; font-size: 24px; }
+        .stat-card { text-align: center; padding: 24px; background: #fafafa; border-radius: 12px; }
+        .stat-card h4 { font-size: 16px; color: #333; margin-bottom: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-compare { display: flex; justify-content: center; align-items: center; gap: 40px; }
+        .stat-item { text-align: center; position: relative; }
+        .stat-value { font-size: 48px; font-weight: 800; margin-bottom: 8px; line-height: 1; }
+        .stat-suffix { font-size: 13px; color: #666; display: block; margin-top: 8px; font-weight: 500; }
+        .stat-divider { color: #e0e0e0; font-size: 32px; font-weight: 300; }
+        .stat-item.dynamic .stat-value { color: #333; }
+        .stat-item.fixed .stat-value { color: #52c41a; text-shadow: 0 2px 8px rgba(82,196,26,0.2); }
         .flow-container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .flow-step { text-align: center; }
         .flow-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 8px; }
@@ -62,10 +64,15 @@
         .tab-btn.active { color: #1890ff; border-bottom-color: #1890ff; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .alert { padding: 12px 16px; border-radius: 4px; margin-top: 12px; font-size: 14px; }
-        .alert-warning { background: #fff7e6; color: #fa8c16; border: 1px solid #ffd591; }
-        .alert-success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
-        .alert-danger { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
+        .alert { padding: 16px 20px; border-radius: 8px; margin-top: 16px; font-size: 14px; border: 2px solid; }
+        .alert-warning { background: #fff7e6; color: #fa8c16; border-color: #ffd591; }
+        .alert-success { background: #f6ffed; color: #52c41a; border-color: #b7eb8f; }
+        .alert-danger { background: #fff1f0; color: #f5222d; border-color: #ffa39e; }
+        .alert-info { background: #f0f5ff; color: #1890ff; border-color: #91d5ff; }
+        /* Mode A result - red border for dynamic mode */
+        .mode-a .alert { border-color: #ff4d4f; background: #fff1f0; color: #cf1322; }
+        /* Mode B result - green border for fixed mode */
+        .mode-b .alert { border-color: #52c41a; background: #f6ffed; color: #237804; }
         .footer { text-align: center; margin-top: 48px; padding: 24px; color: #999; font-size: 14px; }
         @media (max-width: 600px) { .button-group { flex-direction: column; } .tabs-header { flex-direction: column; } .tab-btn { width: 100%; text-align: left; } }
     </style>
@@ -125,12 +132,13 @@
                 <div class="stat-card">
                     <h4>人效比</h4>
                     <div class="stat-compare">
-                        <div class="stat-item">
+                        <div class="stat-item dynamic">
                             <div class="stat-value">2</div>
                             <span class="stat-suffix">项目/月<br>（动态）</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #52c41a;">10+</div>
+                        <div class="stat-divider">vs</div>
+                        <div class="stat-item fixed">
+                            <div class="stat-value">10+</div>
                             <span class="stat-suffix">项目/月<br>（固定）</span>
                         </div>
                     </div>
@@ -138,12 +146,13 @@
                 <div class="stat-card">
                     <h4>交付周期</h4>
                     <div class="stat-compare">
-                        <div class="stat-item">
+                        <div class="stat-item dynamic">
                             <div class="stat-value">30 天</div>
                             <span class="stat-suffix">（动态）</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #52c41a;">3 天</div>
+                        <div class="stat-divider">vs</div>
+                        <div class="stat-item fixed">
+                            <div class="stat-value">3 天</div>
                             <span class="stat-suffix">（固定）</span>
                         </div>
                     </div>
@@ -151,12 +160,13 @@
                 <div class="stat-card">
                     <h4>Token 成本/项目</h4>
                     <div class="stat-compare">
-                        <div class="stat-item">
+                        <div class="stat-item dynamic">
                             <div class="stat-value" id="dynamicCost">$6.75</div>
                             <span class="stat-suffix">（动态）</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #52c41a;">$1.65</div>
+                        <div class="stat-divider">vs</div>
+                        <div class="stat-item fixed">
+                            <div class="stat-value">$1.65</div>
                             <span class="stat-suffix">（固定）</span>
                         </div>
                     </div>
@@ -164,12 +174,13 @@
                 <div class="stat-card">
                     <h4>产出质量</h4>
                     <div class="stat-compare">
-                        <div class="stat-item">
-                            <span class="tag tag-orange">不一致</span>
+                        <div class="stat-item dynamic">
+                            <span class="tag tag-orange" style="font-size: 14px; padding: 6px 16px;">不一致</span>
                             <span class="stat-suffix">（动态）</span>
                         </div>
-                        <div class="stat-item">
-                            <span class="tag tag-green">稳定 60 分+</span>
+                        <div class="stat-divider">vs</div>
+                        <div class="stat-item fixed">
+                            <span class="tag tag-green" style="font-size: 14px; padding: 6px 16px;">稳定 60 分+</span>
                             <span class="stat-suffix">（固定）</span>
                         </div>
                     </div>
