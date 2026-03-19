@@ -78,7 +78,7 @@
         </div>
 
         <div class="two-columns">
-            <div class="card mode-a">
+            <div class="card mode-a" id="modeACard">
                 <div class="card-title">🚀 模式 A：动态创建专家</div>
                 <div class="description-list">
                     <div class="description-item"><span class="label">设计理念</span><span class="value">主 Agent 作为 Leader，按需创建领域专家</span></div>
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="card mode-b">
+            <div class="card mode-b" id="modeBCard">
                 <div class="card-title">👥 模式 B：固定工作流 AI 员工</div>
                 <div class="description-list">
                     <div class="description-item"><span class="label">设计理念</span><span class="value">8 位固定专家流水线</span></div>
@@ -336,9 +336,7 @@
             const requirement = document.getElementById('requirementInput').value;
             if (!requirement.trim()) { alert('请先输入需求描述'); return; }
             showAnalysis();
-            setTimeout(() => {
-                showResultMessage('🚀 固定工作流模式启动！\n\n8 位专家开始协作处理您的需求...\n✓ 需求分析 → 产品定义 → 技术架构 → UX/UI 设计 → 前后端开发 → 测试 → 部署\n\n预计完成时间：3 天\n预计 Token 消耗：~110K', 'success');
-            }, 500);
+            showResultMessage('modeBCard', '🚀 固定工作流模式启动！\n\n8 位专家开始协作处理您的需求...\n✓ 需求分析 → 产品定义 → 技术架构 → UX/UI 设计 → 前后端开发 → 测试 → 部署\n\n预计完成时间：3 天\n预计 Token 消耗：~110K', 'success');
         }
 
         function simulateDynamicExperts() {
@@ -352,11 +350,11 @@
                 let message = '🚀 动态创建专家模式启动！\n\n1. Leader Agent 分析需求...\n2. 创建 ' + expertCount + ' 位领域专家...\n3. 为每位专家配备技能...\n4. 分配任务给专家团队...\n\n⚠️ 注意：上下文快速增长中...\n当前 Token 消耗：' + (dynamicTokens / 1000).toFixed(0) + 'K\n';
                 if (dynamicTokens > 1000000) message += '\n❌ 警告：超过 1M 上下文窗口，可能出现连接失败！';
                 message += '\n\n预计完成时间：7-14 天（含上下文问题调试）';
-                showResultMessage(message, dynamicTokens > 1000000 ? 'warning' : 'info');
+                showResultMessage('modeACard', message, dynamicTokens > 1000000 ? 'warning' : 'info');
             }, 500);
         }
 
-        function showResultMessage(message, type) {
+        function showResultMessage(cardId, message, type) {
             let alertClass = 'alert-info', icon = 'ℹ️';
             if (type === 'success') { alertClass = 'alert-success'; icon = '✅'; }
             else if (type === 'warning') { alertClass = 'alert-warning'; icon = '⚠️'; }
@@ -365,7 +363,7 @@
             resultDiv.className = `alert ${alertClass}`;
             resultDiv.innerHTML = `<strong>${icon} 模拟结果</strong><br><pre style="white-space: pre-wrap; margin-top: 8px;">${message}</pre>`;
 
-            const card = document.querySelector('.card:nth-last-child(2)');
+            const card = document.getElementById(cardId);
             card.appendChild(resultDiv);
             resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
