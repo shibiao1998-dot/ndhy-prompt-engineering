@@ -33,9 +33,13 @@
         .tag-green { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
         .tag-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
         .tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
-        .stat-card { text-align: center; }
-        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
-        .stat-suffix { font-size: 14px; color: #999; margin-left: 4px; }
+        .stat-card { text-align: center; padding: 16px; }
+        .stat-card h4 { font-size: 14px; color: #666; margin-bottom: 16px; font-weight: 600; }
+        .stat-compare { display: flex; justify-content: center; align-items: center; gap: 32px; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+        .stat-suffix { font-size: 12px; color: #999; display: block; margin-top: 4px; }
+        .stat-divider { color: #ddd; font-size: 24px; }
         .flow-container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .flow-step { text-align: center; }
         .flow-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 8px; }
@@ -117,33 +121,57 @@
 
         <div class="card">
             <div class="card-title">📊 核心指标对比</div>
-            <div class="two-columns">
+            <div class="two-columns" style="grid-template-columns: repeat(4, 1fr);">
                 <div class="stat-card">
-                    <div style="font-weight: 600; margin-bottom: 16px;">人效比</div>
-                    <div style="display: flex; gap: 16px;">
-                        <div><div class="stat-value">2</div><div class="stat-suffix">项目/月（动态）</div></div>
-                        <div><div class="stat-value" style="color: #52c41a;">10+</div><div class="stat-suffix">项目/月（固定）</div></div>
+                    <h4>人效比</h4>
+                    <div class="stat-compare">
+                        <div class="stat-item">
+                            <div class="stat-value">2</div>
+                            <span class="stat-suffix">项目/月<br>（动态）</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #52c41a;">10+</div>
+                            <span class="stat-suffix">项目/月<br>（固定）</span>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div style="font-weight: 600; margin-bottom: 16px;">交付周期</div>
-                    <div style="display: flex; gap: 16px;">
-                        <div><div class="stat-value">30 天</div><div class="stat-suffix">（动态）</div></div>
-                        <div><div class="stat-value" style="color: #52c41a;">3 天</div><div class="stat-suffix">（固定）</div></div>
+                    <h4>交付周期</h4>
+                    <div class="stat-compare">
+                        <div class="stat-item">
+                            <div class="stat-value">30 天</div>
+                            <span class="stat-suffix">（动态）</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #52c41a;">3 天</div>
+                            <span class="stat-suffix">（固定）</span>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div style="font-weight: 600; margin-bottom: 16px;">Token 成本/项目</div>
-                    <div style="display: flex; gap: 16px;">
-                        <div><div class="stat-value" id="dynamicCost">$6.75</div><div class="stat-suffix">（动态）</div></div>
-                        <div><div class="stat-value" style="color: #52c41a;">$1.65</div><div class="stat-suffix">（固定）</div></div>
+                    <h4>Token 成本/项目</h4>
+                    <div class="stat-compare">
+                        <div class="stat-item">
+                            <div class="stat-value" id="dynamicCost">$6.75</div>
+                            <span class="stat-suffix">（动态）</span>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #52c41a;">$1.65</div>
+                            <span class="stat-suffix">（固定）</span>
+                        </div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div style="font-weight: 600; margin-bottom: 16px;">产出质量</div>
-                    <div style="display: flex; gap: 16px;">
-                        <div><span class="tag tag-orange">不一致</span><div style="color: #666; font-size: 12px;">（动态模式）</div></div>
-                        <div><span class="tag tag-green">稳定 60 分 +</span><div style="color: #666; font-size: 12px;">（固定模式）</div></div>
+                    <h4>产出质量</h4>
+                    <div class="stat-compare">
+                        <div class="stat-item">
+                            <span class="tag tag-orange">不一致</span>
+                            <span class="stat-suffix">（动态）</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="tag tag-green">稳定 60 分+</span>
+                            <span class="stat-suffix">（固定）</span>
+                        </div>
                     </div>
                 </div>
             </div>
