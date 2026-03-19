@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 员工模式对比 Demo - 华渔提示词工程</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .header { text-align: center; margin-bottom: 48px; }
+        .header h1 { font-size: 32px; color: #1890ff; margin-bottom: 12px; }
+        .header p { color: #666; font-size: 16px; }
+        .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
+        @media (max-width: 768px) { .two-columns { grid-template-columns: 1fr; } }
+        .mode-a { border: 2px solid #ff4d4f; }
+        .mode-b { border: 2px solid #52c41a; }
+        .description-list { margin-bottom: 16px; }
+        .description-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; }
+        .description-item:last-child { border-bottom: none; }
+        .label { color: #666; font-weight: 500; }
+        .value { font-weight: 600; }
+        .input-field { width: 100px; padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px; text-align: center; }
+        .progress-container { margin-top: 16px; }
+        .progress-bar { height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; transition: width 0.3s ease; }
+        .progress-text { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #333; font-weight: 600; }
+        .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .tag-red { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; border: 1px solid #ffd591; }
+        .tag-green { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
+        .tag-purple { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
+        .stat-card { text-align: center; }
+        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .stat-suffix { font-size: 14px; color: #999; margin-left: 4px; }
+        .flow-container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .flow-step { text-align: center; }
+        .flow-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 8px; }
+        .flow-arrow { color: #999; font-size: 24px; }
+        textarea.request-input { width: 100%; padding: 12px; border: 1px solid #d9d9d9; border-radius: 4px; resize: vertical; min-height: 100px; font-family: inherit; margin-bottom: 16px; }
+        .button-group { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease; }
+        .btn-primary { background: #1890ff; color: white; }
+        .btn-primary:hover { background: #40a9ff; }
+        .btn-secondary { background: #fff; color: #333; border: 1px solid #d9d9d9; }
+        .btn-secondary:hover { color: #1890ff; border-color: #1890ff; }
+        .conclusion { background: #f6ffed; border: 1px solid #52c41a; }
+        .conclusion h3 { color: #52c41a; margin-bottom: 16px; }
+        .conclusion-tags { display: flex; gap: 32px; flex-wrap: wrap; }
+        .conclusion-tag-group { flex: 1; min-width: 200px; }
+        .conclusion-tag-group strong { display: block; margin-bottom: 8px; }
+        .conclusion-tag-group .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tabs-header { display: flex; border-bottom: 1px solid #e8e8e8; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-size: 14px; color: #666; transition: all 0.3s ease; }
+        .tab-btn.active { color: #1890ff; border-bottom-color: #1890ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .alert { padding: 12px 16px; border-radius: 4px; margin-top: 12px; font-size: 14px; }
+        .alert-warning { background: #fff7e6; color: #fa8c16; border: 1px solid #ffd591; }
+        .alert-success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .alert-danger { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
+        .footer { text-align: center; margin-top: 48px; padding: 24px; color: #999; font-size: 14px; }
+        @media (max-width: 600px) { .button-group { flex-direction: column; } .tabs-header { flex-direction: column; } .tab-btn { width: 100%; text-align: left; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ AI 员工模式对比 Demo</h1>
+            <p>交互式展示两种 AI 员工架构模式的对比：动态创建专家 vs 固定工作流</p>
+        </div>
+
+        <div class="two-columns">
+            <div class="card mode-a">
+                <div class="card-title">🚀 模式 A：动态创建专家</div>
+                <div class="description-list">
+                    <div class="description-item"><span class="label">设计理念</span><span class="value">主 Agent 作为 Leader，按需创建领域专家</span></div>
+                    <div class="description-item"><span class="label">专家池</span><span class="value">随业务积累不断增长</span></div>
+                    <div class="description-item"><span class="label">理论覆盖</span><span class="value">全业务领域</span></div>
+                    <div class="description-item"><span class="label">当前专家数</span><span class="value"><input type="number" id="expertCount" class="input-field" value="10" min="1" max="100"></span></div>
+                    <div class="description-item"><span class="label">Token 消耗</span><span class="value" id="dynamicTokens">450K tokens ⚠️</span></div>
+                    <div class="description-item"><span class="label">失败风险</span><span class="value"><span class="tag tag-green" id="failureRisk">低</span></span></div>
+                </div>
+                <div class="progress-container">
+                    <div style="color: #666; margin-bottom: 8px;">上下文增长曲线</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="dynamicProgress" style="width: 0%; background: #ff4d4f;"></div>
+                        <div class="progress-text" id="dynamicProgressText">450K / 1M</div>
+                    </div>
+                    <div id="contextWarning" class="alert alert-danger" style="display: none;">⚠️ 超过 1M 上下文窗口，可能出现连接失败</div>
+                </div>
+            </div>
+
+            <div class="card mode-b">
+                <div class="card-title">👥 模式 B：固定工作流 AI 员工</div>
+                <div class="description-list">
+                    <div class="description-item"><span class="label">设计理念</span><span class="value">8 位固定专家流水线</span></div>
+                    <div class="description-item"><span class="label">专家配置</span><span class="value">需求→产品→架构→UX→开发→测试→部署</span></div>
+                    <div class="description-item"><span class="label">上下文</span><span class="value">可预测，Token 消耗有上限</span></div>
+                    <div class="description-item"><span class="label">Token 消耗</span><span class="value" style="color: #52c41a;">110K tokens ✓</span></div>
+                    <div class="description-item"><span class="label">稳定性</span><span class="value"><span class="tag tag-green">高</span></span></div>
+                    <div class="description-item"><span class="label">产出质量</span><span class="value"><span class="tag tag-blue">稳定 60 分 +</span></span></div>
+                </div>
+                <div class="progress-container">
+                    <div style="color: #666; margin-bottom: 8px;">上下文使用率</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 11%; background: #52c41a;"></div>
+                        <div class="progress-text">110K / 1M (11.0%)</div>
+                    </div>
+                    <div class="alert alert-success">✓ 远低于上下文限制，稳定运行</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📊 核心指标对比</div>
+            <div class="two-columns">
+                <div class="stat-card">
+                    <div style="font-weight: 600; margin-bottom: 16px;">人效比</div>
+                    <div style="display: flex; gap: 16px;">
+                        <div><div class="stat-value">2</div><div class="stat-suffix">项目/月（动态）</div></div>
+                        <div><div class="stat-value" style="color: #52c41a;">10+</div><div class="stat-suffix">项目/月（固定）</div></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-weight: 600; margin-bottom: 16px;">交付周期</div>
+                    <div style="display: flex; gap: 16px;">
+                        <div><div class="stat-value">30 天</div><div class="stat-suffix">（动态）</div></div>
+                        <div><div class="stat-value" style="color: #52c41a;">3 天</div><div class="stat-suffix">（固定）</div></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-weight: 600; margin-bottom: 16px;">Token 成本/项目</div>
+                    <div style="display: flex; gap: 16px;">
+                        <div><div class="stat-value" id="dynamicCost">$6.75</div><div class="stat-suffix">（动态）</div></div>
+                        <div><div class="stat-value" style="color: #52c41a;">$1.65</div><div class="stat-suffix">（固定）</div></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-weight: 600; margin-bottom: 16px;">产出质量</div>
+                    <div style="display: flex; gap: 16px;">
+                        <div><span class="tag tag-orange">不一致</span><div style="color: #666; font-size: 12px;">（动态模式）</div></div>
+                        <div><span class="tag tag-green">稳定 60 分 +</span><div style="color: #666; font-size: 12px;">（固定模式）</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🗺️ 执行流程对比</div>
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('fixed')">固定工作流模式</button>
+                <button class="tab-btn" onclick="switchTab('dynamic')">动态创建专家模式</button>
+            </div>
+
+            <div id="fixedTab" class="tab-content active">
+                <div class="flow-container">
+                    <div class="flow-step"><div class="flow-icon" style="background: #1890ff;">🎯</div><div>需求分析</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #722ed1;">📐</div><div>产品定义</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #13c2c2;">🏛️</div><div>技术架构</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #eb2f96;">🎨</div><div>UX 设计</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #fa541c;">🖌️</div><div>UI 设计</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #52c41a;">🖥️</div><div>前端开发</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #2f54eb;">⚙️</div><div>后端开发</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #fa8c16;">🧪</div><div>测试部署</div></div>
+                </div>
+                <div style="margin-top: 24px; text-align: center;">
+                    <span class="tag tag-green">可预测</span>
+                    <span class="tag tag-blue">标准化</span>
+                    <span class="tag tag-green">Token 消耗稳定</span>
+                    <span class="tag tag-blue">质量可控</span>
+                </div>
+            </div>
+
+            <div id="dynamicTab" class="tab-content">
+                <div class="flow-container" style="justify-content: center; flex-wrap: wrap;">
+                    <div class="flow-step"><div class="flow-icon" style="background: #ff4d4f;">🧠</div><div>Leader Agent</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #faad14;">🔍</div><div>分析需求</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #1890ff;">➕</div><div>创建专家</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #722ed1;">🎭</div><div>分配任务</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><div class="flow-icon" style="background: #52c41a;">⚡</div><div>执行</div></div>
+                </div>
+                <div style="margin-top: 24px; text-align: center;">
+                    <span class="tag tag-red">不可预测</span>
+                    <span class="tag tag-orange">上下文爆炸</span>
+                    <span class="tag tag-red">Token 消耗高</span>
+                    <span class="tag tag-orange">质量不稳定</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">💬 需求输入演示</div>
+            <p style="color: #666; margin-bottom: 16px;">尝试输入一个产品需求，查看两种模式的处理差异：</p>
+            <textarea class="request-input" id="requirementInput" placeholder="例如：我需要一个内部工具，让销售团队可以录入客户信息，并自动生成跟进提醒..."></textarea>
+            <div class="button-group">
+                <button class="btn-primary" onclick="simulateFixedWorkflow()">👥 使用固定工作流模式</button>
+                <button class="btn-secondary" onclick="simulateDynamicExperts()">🚀 使用动态创建专家模式</button>
+            </div>
+            <div id="analysisResult" style="display: none;">
+                <div style="background: #f5f7fa; padding: 16px; border-radius: 4px; margin-top: 16px;">
+                    <strong style="display: block; margin-bottom: 12px;">📋 需求分析</strong>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #e8e8e8;"><td style="padding: 8px; color: #666;">需求类型</td><td style="padding: 8px; font-weight: 500;">内部工具开发</td></tr>
+                        <tr style="border-bottom: 1px solid #e8e8e8;"><td style="padding: 8px; color: #666;">复杂度</td><td style="padding: 8px; font-weight: 500;">中等</td></tr>
+                        <tr style="border-bottom: 1px solid #e8e8e8;"><td style="padding: 8px; color: #666;">预计工作量（固定模式）</td><td style="padding: 8px; font-weight: 500; color: #52c41a;">3 天</td></tr>
+                        <tr style="border-bottom: 1px solid #e8e8e8;"><td style="padding: 8px; color: #666;">预计工作量（动态模式）</td><td style="padding: 8px; font-weight: 500; color: #fa8c16;">7-14 天（含上下文问题调试）</td></tr>
+                        <tr style="border-bottom: 1px solid #e8e8e8;"><td style="padding: 8px; color: #666;">Token 消耗（固定模式）</td><td style="padding: 8px; font-weight: 500; color: #52c41a;">~110K</td></tr>
+                        <tr><td style="padding: 8px; color: #666;">Token 消耗（动态模式）</td><td style="padding: 8px; font-weight: 500; color: #fa8c16;">~300K-500K</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card conclusion">
+            <h3>✅ 结论：固定工作流模式是当前技术条件下的最优选择</h3>
+            <div class="conclusion-tags">
+                <div class="conclusion-tag-group">
+                    <strong>🔧 技术可行性</strong>
+                    <div class="tags">
+                        <span class="tag tag-green">上下文可控</span>
+                        <span class="tag tag-green">稳定性高</span>
+                        <span class="tag tag-green">易于维护</span>
+                    </div>
+                </div>
+                <div class="conclusion-tag-group">
+                    <strong>💰 经济效益</strong>
+                    <div class="tags">
+                        <span class="tag tag-blue">成本可预测</span>
+                        <span class="tag tag-blue">ROI 可测量</span>
+                        <span class="tag tag-blue">5-10 倍人效提升</span>
+                    </div>
+                </div>
+                <div class="conclusion-tag-group">
+                    <strong>📈 业务价值</strong>
+                    <div class="tags">
+                        <span class="tag tag-purple">快速交付</span>
+                        <span class="tag tag-purple">质量稳定</span>
+                        <span class="tag tag-purple">可规模化</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>华渔提示词工程 · AI 员工方向汇报 | 基于 OpenClaw 的固定工作流 AI 员工方案</p>
+        <p>创建时间：2026-03-19</p>
+    </div>
+
+    <script>
+        const BASE_TOKENS = 50000, TOKENS_PER_EXPERT = 10000, TOKENS_PER_SKILL = 5000, SKILLS_PER_EXPERT = 3, FIXED_MODE_TOKENS = 110000, COST_PER_M_TOKEN = 0.000015;
+
+        document.getElementById('expertCount').addEventListener('input', updateCalculations);
+
+        function calculateDynamicTokens(expertCount) {
+            return BASE_TOKENS + (expertCount * TOKENS_PER_EXPERT) + (expertCount * SKILLS_PER_EXPERT * TOKENS_PER_SKILL);
+        }
+
+        function getFailureRisk(expertCount) {
+            if (expertCount >= 30) return { risk: 'high', label: '高（连接失败）', color: 'red' };
+            if (expertCount >= 20) return { risk: 'medium', label: '中', color: 'orange' };
+            return { risk: 'low', label: '低', color: 'green' };
+        }
+
+        function updateCalculations() {
+            const expertCount = parseInt(document.getElementById('expertCount').value) || 10;
+            const dynamicTokens = calculateDynamicTokens(expertCount);
+            const failureRisk = getFailureRisk(expertCount);
+
+            document.getElementById('dynamicTokens').innerHTML = `${(dynamicTokens / 1000).toFixed(0)}K tokens ${dynamicTokens > 1000000 ? '⚠️' : ''}`;
+            const progressPercent = Math.min((dynamicTokens / 1000000) * 100, 100);
+            document.getElementById('dynamicProgress').style.width = `${progressPercent}%`;
+            document.getElementById('dynamicProgressText').textContent = `${(dynamicTokens / 1000).toFixed(0)}K / 1M`;
+
+            const riskTag = document.getElementById('failureRisk');
+            riskTag.textContent = failureRisk.label;
+            riskTag.className = `tag tag-${failureRisk.color}`;
+
+            document.getElementById('contextWarning').style.display = dynamicTokens > 1000000 ? 'block' : 'none';
+            document.getElementById('dynamicCost').textContent = `$${(dynamicTokens * COST_PER_M_TOKEN).toFixed(2)}`;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showAnalysis() { document.getElementById('analysisResult').style.display = 'block'; }
+
+        function simulateFixedWorkflow() {
+            const requirement = document.getElementById('requirementInput').value;
+            if (!requirement.trim()) { alert('请先输入需求描述'); return; }
+            showAnalysis();
+            setTimeout(() => {
+                showResultMessage('🚀 固定工作流模式启动！\n\n8 位专家开始协作处理您的需求...\n✓ 需求分析 → 产品定义 → 技术架构 → UX/UI 设计 → 前后端开发 → 测试 → 部署\n\n预计完成时间：3 天\n预计 Token 消耗：~110K', 'success');
+            }, 500);
+        }
+
+        function simulateDynamicExperts() {
+            const requirement = document.getElementById('requirementInput').value;
+            if (!requirement.trim()) { alert('请先输入需求描述'); return; }
+            showAnalysis();
+            const expertCount = parseInt(document.getElementById('expertCount').value) || 10;
+            const dynamicTokens = calculateDynamicTokens(expertCount);
+
+            setTimeout(() => {
+                let message = '🚀 动态创建专家模式启动！\n\n1. Leader Agent 分析需求...\n2. 创建 ' + expertCount + ' 位领域专家...\n3. 为每位专家配备技能...\n4. 分配任务给专家团队...\n\n⚠️ 注意：上下文快速增长中...\n当前 Token 消耗：' + (dynamicTokens / 1000).toFixed(0) + 'K\n';
+                if (dynamicTokens > 1000000) message += '\n❌ 警告：超过 1M 上下文窗口，可能出现连接失败！';
+                message += '\n\n预计完成时间：7-14 天（含上下文问题调试）';
+                showResultMessage(message, dynamicTokens > 1000000 ? 'warning' : 'info');
+            }, 500);
+        }
+
+        function showResultMessage(message, type) {
+            let alertClass = 'alert-info', icon = 'ℹ️';
+            if (type === 'success') { alertClass = 'alert-success'; icon = '✅'; }
+            else if (type === 'warning') { alertClass = 'alert-warning'; icon = '⚠️'; }
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `alert ${alertClass}`;
+            resultDiv.innerHTML = `<strong>${icon} 模拟结果</strong><br><pre style="white-space: pre-wrap; margin-top: 8px;">${message}</pre>`;
+
+            const card = document.querySelector('.card:nth-last-child(2)');
+            card.appendChild(resultDiv);
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        updateCalculations();
+    </script>
+</body>
+</html>
