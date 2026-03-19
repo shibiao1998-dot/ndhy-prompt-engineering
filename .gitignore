@@ -15,3 +15,7 @@ frontend/node_modules/
 frontend/dist/
 .DS_Store
 *.log
+
+# Build outputs (but keep AI Employee Demo HTML)
+backend/static/assets/
+backend/static/index.html

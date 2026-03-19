@@ -19,8 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ ./
 
-# Copy frontend build output
-COPY --from=frontend-build /app/frontend/dist ./static
+# Copy frontend build output (includes ai-employee-demo.html)
+COPY --from=frontend-build /app/frontend/dist/ ./static/
 
 # Import dimension data into database
 RUN python import_from_md.py

@@ -85,6 +85,7 @@ async def health_check():
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 os.makedirs(static_dir, exist_ok=True)
 index_path = os.path.join(static_dir, "index.html")
+demo_path = os.path.join(static_dir, "ai-employee-demo.html")
 
 if os.path.exists(index_path):
     from fastapi.responses import FileResponse
@@ -101,6 +102,14 @@ if os.path.exists(index_path):
             return FileResponse(file_path)
         # Otherwise return index.html for SPA routing
         return FileResponse(index_path)
+
+
+@app.get("/demo")
+async def demo_page():
+    """Serve AI Employee Demo page"""
+    if os.path.exists(demo_path):
+        return FileResponse(demo_path)
+    return {"error": "Demo page not found"}
 
 
 if __name__ == "__main__":
