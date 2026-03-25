@@ -25,19 +25,43 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
+from database import init_db, USE_POSTGRES, Database
 from routers import chat, dimensions
-
-# Check database type
-DATABASE_URL = os.environ.get("DATABASE_URL")
-USE_POSTGRES = DATABASE_URL and DATABASE_URL.startswith("postgresql")
+from migrate_111_dimensions import run_migration
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Simple lifespan - no blocking init."""
-    print(f"[Startup] Starting with {'PostgreSQL' if USE_POSTGRES else 'SQLite'}")
+    """Initialize database and run migration on startup."""
+    try:
+        print(f"[Startup] Using database: {'PostgreSQL' if USE_POSTGRES else 'SQLite'}")
+        if USE_POSTGRES:
+            db_url = os.environ.get('DATABASE_URL', '')
+            print(f"[Startup] DATABASE_URL: {db_url[:50] if db_url else 'None'}...")
+
+        # Initialize schema
+        await init_db()
+        print("[Startup] Schema initialized")
+
+        # Run 111 dimensions migration
+        db = Database()
+        await db.connect()
+        try:
+            count = await run_migration(db)
+            print(f"[Startup] Migration complete: {count} dimensions")
+        except Exception as e:
+            print(f"[Startup] Migration error: {e}")
+            import traceback
+            traceback.print_exc()
+        finally:
+            await db.close()
+
+    except Exception as e:
+        print(f"[Startup] Error during init: {e}")
+        import traceback
+        traceback.print_exc()
+
     yield
-    print("[Shutdown] Shutting down")
 
 
 app = FastAPI(
@@ -63,7 +87,11 @@ app.include_router(dimensions.router)
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "service": "prompt-engineering-v2",
+        "database": "postgresql" if USE_POSTGRES else "sqlite"
+    }
 
 
 @app.get("/")

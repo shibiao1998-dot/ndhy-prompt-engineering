@@ -9,11 +9,11 @@ sys.path.insert(0, os.path.dirname(__file__))
 from import_111_dimensions import DIMENSION_DATA
 
 
-async def run_migration(conn):
+async def run_migration(db):
     """Run migration - creates table and imports 111 dimensions."""
 
     # Create table
-    await conn.execute("""
+    await db.execute("""
         CREATE TABLE IF NOT EXISTS dimensions (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
@@ -31,40 +31,35 @@ async def run_migration(conn):
     print("[Migration] Table created")
 
     # Check if data already exists
-    result = await conn.fetch("SELECT COUNT(*) as count FROM dimensions")
-    existing_count = result[0]['count']
+    result = await db.fetch_all("SELECT COUNT(*) as cnt FROM dimensions")
+    existing_count = result[0]['cnt'] if result else 0
     print(f"[Migration] Existing count: {existing_count}")
 
     if existing_count >= 100:
         print(f"[Migration] Table already has {existing_count} dimensions, skipping import")
         return existing_count
 
-    # Insert all dimensions using copy for efficiency
+    # Insert all dimensions
     now = datetime.now().isoformat()
 
-    # Prepare batch insert
-    records = []
     for dim in DIMENSION_DATA:
         level = dim.get('level')
-        records.append((
+        await db.execute("""
+            INSERT INTO dimensions (id, name, category, category_name, description,
+                                    data_source, update_frequency, level, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ON CONFLICT (id) DO NOTHING
+        """, (
             dim['id'], dim['name'], dim['category'], dim['category_name'],
             dim['description'], dim['data_source'], dim['update_frequency'],
             level, now, now
         ))
 
-    # Batch insert
-    await conn.copy_records_to_table(
-        'dimensions',
-        records=records,
-        columns=['id', 'name', 'category', 'category_name', 'description',
-                 'data_source', 'update_frequency', 'level', 'created_at', 'updated_at']
-    )
-
-    print(f"[Migration] Inserted {len(records)} dimensions")
+    print(f"[Migration] Inserted {len(DIMENSION_DATA)} dimensions")
 
     # Verify
-    result = await conn.fetch("SELECT COUNT(*) as count FROM dimensions")
-    count = result[0]['count']
-    print(f"[Migration] PostgreSQL: {count} dimensions imported")
+    result = await db.fetch_all("SELECT COUNT(*) as cnt FROM dimensions")
+    count = result[0]['cnt'] if result else 0
+    print(f"[Migration] Total: {count} dimensions imported")
 
     return count
