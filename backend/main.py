@@ -26,7 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
 from database import init_db, USE_POSTGRES, Database
-from routers import chat, dimensions
+from routers import dimensions
 from migrate_111_dimensions import run_migration
 
 
@@ -81,7 +81,6 @@ app.add_middleware(
 )
 
 # Register API routers
-app.include_router(chat.router)
 app.include_router(dimensions.router)
 
 
