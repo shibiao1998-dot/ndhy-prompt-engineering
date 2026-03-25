@@ -20,6 +20,7 @@ if sys.stderr and hasattr(sys.stderr, "reconfigure"):
 sys.path.insert(0, os.path.dirname(__file__))
 
 from contextlib import asynccontextmanager
+import asyncio
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,7 +29,26 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from database import init_db, USE_POSTGRES, Database
 from routers import chat, dimensions
-from migrate_111_dimensions import run_migration
+
+
+async def run_migration_async():
+    """Run migration in background."""
+    try:
+        from migrate_111_dimensions import run_migration
+
+        db = Database()
+        await db.connect()
+        try:
+            count = await run_migration(db)
+            print(f"[Migration] Complete: {count} dimensions")
+        except Exception as e:
+            print(f"[Migration] Error: {e}")
+            import traceback
+            traceback.print_exc()
+        finally:
+            await db.close()
+    except Exception as e:
+        print(f"[Migration] Failed to start: {e}")
 
 
 @asynccontextmanager
@@ -38,25 +58,21 @@ async def lifespan(app: FastAPI):
         print(f"[Startup] Using database: {'PostgreSQL' if USE_POSTGRES else 'SQLite'}")
         if USE_POSTGRES:
             db_url = os.environ.get('DATABASE_URL', '')
-            print(f"[Startup] DATABASE_URL: {db_url[:50] if db_url else 'None'}...")
+            print(f"[Startup] DATABASE_URL set: {bool(db_url)}")
 
-        # Initialize schema
-        await init_db()
-        print("[Startup] Schema initialized")
-
-        # Run 111 dimensions migration
-        db = Database()
-        await db.connect()
+        # Initialize schema (non-blocking)
         try:
-            count = await run_migration(db)
-            print(f"[Startup] Migration complete: {count} dimensions")
+            await init_db()
+            print("[Startup] Schema initialized")
         except Exception as e:
-            print(f"[Startup] Migration error: {e}")
-        finally:
-            await db.close()
+            print(f"[Startup] Schema init error: {e}")
+
+        # Run migration in background (don't block startup)
+        asyncio.create_task(run_migration_async())
+        print("[Startup] Migration started in background")
 
     except Exception as e:
-        print(f"[Startup] Error during init: {e}")
+        print(f"[Startup] Error: {e}")
         import traceback
         traceback.print_exc()
 
