@@ -98,7 +98,7 @@ async def update_dimension(
         if not updates:
             return existing
 
-        updates["updated_at"] = datetime.now().isoformat()
+        updates["updated_at"] = datetime.now()
         set_clause = ", ".join(f"{k} = ${i+1}" for i, k in enumerate(updates.keys()))
         values = list(updates.values()) + [dimension_id]
 
