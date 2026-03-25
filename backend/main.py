@@ -16,67 +16,28 @@ if sys.stderr and hasattr(sys.stderr, "reconfigure"):
     except Exception:
         pass
 
-# Add backend dir to path so `services.xxx` imports work
+# Add backend dir to path
 sys.path.insert(0, os.path.dirname(__file__))
 
 from contextlib import asynccontextmanager
-import asyncio
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 
-from database import init_db, USE_POSTGRES, Database
 from routers import chat, dimensions
 
-
-async def run_migration_async():
-    """Run migration in background."""
-    try:
-        from migrate_111_dimensions import run_migration
-
-        db = Database()
-        await db.connect()
-        try:
-            count = await run_migration(db)
-            print(f"[Migration] Complete: {count} dimensions")
-        except Exception as e:
-            print(f"[Migration] Error: {e}")
-            import traceback
-            traceback.print_exc()
-        finally:
-            await db.close()
-    except Exception as e:
-        print(f"[Migration] Failed to start: {e}")
+# Check database type
+DATABASE_URL = os.environ.get("DATABASE_URL")
+USE_POSTGRES = DATABASE_URL and DATABASE_URL.startswith("postgresql")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database and run migration on startup."""
-    try:
-        print(f"[Startup] Using database: {'PostgreSQL' if USE_POSTGRES else 'SQLite'}")
-        if USE_POSTGRES:
-            db_url = os.environ.get('DATABASE_URL', '')
-            print(f"[Startup] DATABASE_URL set: {bool(db_url)}")
-
-        # Initialize schema (non-blocking)
-        try:
-            await init_db()
-            print("[Startup] Schema initialized")
-        except Exception as e:
-            print(f"[Startup] Schema init error: {e}")
-
-        # Run migration in background (don't block startup)
-        asyncio.create_task(run_migration_async())
-        print("[Startup] Migration started in background")
-
-    except Exception as e:
-        print(f"[Startup] Error: {e}")
-        import traceback
-        traceback.print_exc()
-
+    """Simple lifespan - no blocking init."""
+    print(f"[Startup] Starting with {'PostgreSQL' if USE_POSTGRES else 'SQLite'}")
     yield
+    print("[Shutdown] Shutting down")
 
 
 app = FastAPI(
@@ -86,7 +47,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — allow localhost on any port during development
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -102,11 +63,7 @@ app.include_router(dimensions.router)
 
 @app.get("/api/health")
 async def health_check():
-    return {
-        "status": "ok",
-        "service": "prompt-engineering-v2",
-        "database": "postgresql" if USE_POSTGRES else "sqlite"
-    }
+    return {"status": "ok"}
 
 
 @app.get("/")
@@ -114,37 +71,29 @@ async def root():
     return {
         "service": "提示词工程维度管理平台",
         "version": "2.1.0",
-        "database": "postgresql" if USE_POSTGRES else "sqlite",
         "endpoints": {
             "/api/health": "Health check",
             "/api/dimensions": "List dimensions",
-            "/api/dimensions/categories": "List categories",
-            "/docs": "API documentation"
+            "/api/dimensions/categories": "List categories"
         }
     }
 
 
-# Static files — MUST be after all API routes
+# Static files
 static_dir = "/app/static"
 os.makedirs(static_dir, exist_ok=True)
 index_path = os.path.join(static_dir, "index.html")
 
 if os.path.exists(index_path):
-    # Serve static assets (js, css, images)
     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets"), html=True), name="assets")
 
-    # SPA fallback: any non-API path returns index.html
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        # Skip API routes
         if full_path.startswith("api/"):
             return JSONResponse({"error": "Not found"}, status_code=404)
-
-        # If file exists in static dir, serve it
         file_path = os.path.join(static_dir, full_path)
         if full_path and os.path.isfile(file_path):
             return FileResponse(file_path)
-        # Otherwise return index.html for SPA routing
         return FileResponse(index_path)
 
 
