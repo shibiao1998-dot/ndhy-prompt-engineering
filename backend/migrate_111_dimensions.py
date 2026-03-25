@@ -39,8 +39,8 @@ async def run_migration(db):
         print(f"[Migration] Table already has {existing_count} dimensions, skipping import")
         return existing_count
 
-    # Insert all dimensions
-    now = datetime.now().isoformat()
+    # Insert all dimensions - use datetime objects for PostgreSQL
+    now = datetime.now()
 
     for dim in DIMENSION_DATA:
         level = dim.get('level')
