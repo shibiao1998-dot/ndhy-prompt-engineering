@@ -19,10 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ ./
 
-# Copy frontend build output (includes ai-employee-demo.html)
-COPY --from=frontend-build /app/frontend/dist/ ./static/
+# Copy frontend build output to static directory
+COPY --from=frontend-build /app/frontend/dist/ /app/static/
 
-# Create data directory for database
+# Create data directory for database (Railway persistent volume)
 RUN mkdir -p /app/data
 
 # Import 111 dimensions into database

@@ -73,7 +73,8 @@ async def health_check():
 
 
 # Static files — MUST be after all API routes
-static_dir = os.path.join(os.path.dirname(__file__), "static")
+# Use absolute path for Railway deployment
+static_dir = "/app/static"
 os.makedirs(static_dir, exist_ok=True)
 index_path = os.path.join(static_dir, "index.html")
 
@@ -81,7 +82,7 @@ if os.path.exists(index_path):
     from fastapi.responses import FileResponse
 
     # Serve static assets (js, css, images)
-    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets"), html=True), name="assets")
 
     # SPA fallback: any non-API path returns index.html
     @app.get("/{full_path:path}")
@@ -92,6 +93,20 @@ if os.path.exists(index_path):
             return FileResponse(file_path)
         # Otherwise return index.html for SPA routing
         return FileResponse(index_path)
+else:
+    # No static files, provide API-only mode
+    @app.get("/")
+    async def root():
+        return {
+            "service": "提示词工程维度管理平台",
+            "version": "2.1.0",
+            "endpoints": {
+                "/api/health": "Health check",
+                "/api/dimensions": "List dimensions",
+                "/api/dimensions/categories": "List categories",
+                "/docs": "API documentation"
+            }
+        }
 
 
 if __name__ == "__main__":
