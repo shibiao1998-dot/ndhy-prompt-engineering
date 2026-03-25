@@ -1,5 +1,5 @@
 # Prompt Engineering System v2
-# 华渔提示词工程 · AI设计师
+# 华渔提示词工程 · AI 设计师
 
 node_modules/
 dist/
@@ -10,12 +10,14 @@ __pycache__/
 .env
 .venv
 backend/data/
-backend/static/
 frontend/node_modules/
 frontend/dist/
 .DS_Store
 *.log
 
-# Build outputs (but keep AI Employee Demo HTML)
+# Build outputs (generated during build)
 backend/static/assets/
 backend/static/index.html
+
+# But keep AI Employee Demo HTML
+!backend/static/*.html

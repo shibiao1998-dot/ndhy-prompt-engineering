@@ -3,8 +3,12 @@
 import os
 import aiosqlite
 
-DB_DIR = os.path.join(os.path.dirname(__file__), "data")
-DB_PATH = os.path.join(DB_DIR, "prompt_engineering.db")
+# Support Railway persistent volume via DATABASE_URL env var
+DB_PATH = os.environ.get(
+    "DATABASE_URL",
+    os.path.join(os.path.dirname(__file__), "data", "prompt_engineering.db")
+)
+DB_DIR = os.path.dirname(DB_PATH)
 
 SCHEMA = """
 -- 维度表
@@ -14,10 +18,10 @@ CREATE TABLE IF NOT EXISTS dimensions (
   category TEXT NOT NULL,
   category_name TEXT,
   description TEXT,
-  quality_role TEXT,
   data_source TEXT,
   update_frequency TEXT,
   source_explanation TEXT,
+  level INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

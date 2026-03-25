@@ -34,10 +34,10 @@ export interface Dimension {
   category: string
   category_name: string | null
   description: string | null
-  quality_role: string | null
   data_source: string | null
   update_frequency: string | null
   source_explanation: string | null
+  level: number | null
   created_at: string | null
   updated_at: string | null
 }
@@ -45,7 +45,6 @@ export interface Dimension {
 export interface DimensionUpdate {
   name?: string
   description?: string
-  quality_role?: string
   data_source?: string
   update_frequency?: string
   source_explanation?: string

@@ -22,11 +22,16 @@ COPY backend/ ./
 # Copy frontend build output (includes ai-employee-demo.html)
 COPY --from=frontend-build /app/frontend/dist/ ./static/
 
-# Import dimension data into database
-RUN python import_from_md.py
+# Create data directory for database
+RUN mkdir -p /app/data
+
+# Import 111 dimensions into database
+RUN python migrate_111_dimensions.py || true
 
 # Railway injects PORT env var
 ENV PORT=8000
+# Use /app/data for database (persistent volume)
+ENV DATABASE_URL=/app/data/prompt_engineering.db
 EXPOSE ${PORT}
 
 # Start server with 30min keep-alive for long SSE streams

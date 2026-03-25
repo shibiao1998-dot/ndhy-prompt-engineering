@@ -73,37 +73,3 @@ export async function updateDimension(id: string, data: DimensionUpdate): Promis
 export async function deleteDimension(id: string): Promise<{ message: string }> {
   return request<{ message: string }>(`/dimensions/${id}`, { method: 'DELETE' })
 }
-
-export async function triggerDimensionWorkflow(
-  dimensionId: string,
-  dimensionInput: string,
-): Promise<Dimension> {
-  // Workflow may take up to 20 minutes; use AbortController for timeout
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 20 * 60 * 1000) // 20 min
-
-  try {
-    const res = await fetch(`${BASE}/dimensions/${dimensionId}/update-via-workflow`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        dimension_id: dimensionId,
-        dimension_input: dimensionInput,
-      }),
-      signal: controller.signal,
-    })
-    clearTimeout(timeoutId)
-
-    if (!res.ok) {
-      const error = await res.text()
-      throw new Error(`API Error ${res.status}: ${error}`)
-    }
-    return res.json()
-  } catch (err) {
-    clearTimeout(timeoutId)
-    if (err instanceof DOMException && err.name === 'AbortError') {
-      throw new Error('Workflow 执行超时（20分钟），请稍后重试')
-    }
-    throw err
-  }
-}

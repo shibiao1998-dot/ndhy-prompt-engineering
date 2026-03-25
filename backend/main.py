@@ -1,10 +1,9 @@
-"""FastAPI entry point for the Prompt Engineering System v2."""
+"""FastAPI entry point for the Prompt Engineering Dimension Platform."""
 
 import os
 import sys
 
-# Fix Windows GBK encoding — AIhub responses contain emoji (📌 etc.)
-# which crash the SSE stream under default GBK codec.
+# Fix Windows GBK encoding
 os.environ.setdefault("PYTHONUTF8", "1")
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     try:
@@ -39,14 +38,6 @@ from fastapi.staticfiles import StaticFiles
 from database import init_db
 from routers import chat, dimensions
 
-# Log AIhub config on import
-import services.aihub_client as _aihub
-print(f"[AIhub] API URL: {_aihub.AIHUB_API_URL}")
-print(f"[AIhub] Chatflow Bot ID: {_aihub.AIHUB_BOT_ID or '⚠️ NOT SET'}")
-print(f"[AIhub] Workflow Bot ID: {_aihub.AIHUB_WORKFLOW_BOT_ID or '⚠️ NOT SET'}")
-print(f"[AIhub] Analyze Bot ID: {_aihub.AIHUB_ANALYZE_BOT_ID or '⚠️ NOT SET'}")
-print(f"[AIhub] BTS App: {_aihub.BTS_APP_NAME}")
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -56,9 +47,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="华渔提示词工程 · AI设计师",
-    description="Prompt Engineering System v2 — 信息对称 · 相信 AI",
-    version="2.0.0",
+    title="提示词工程维度管理平台",
+    description="Prompt Engineering Dimension Platform — 111 个维度管理",
+    version="2.1.0",
     lifespan=lifespan,
 )
 
@@ -79,17 +70,6 @@ app.include_router(dimensions.router)
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok", "service": "prompt-engineering-v2"}
-
-
-# Demo page route - MUST be before SPA catch-all route
-@app.get("/demo")
-async def demo_page():
-    """Serve AI Employee Demo page"""
-    from fastapi.responses import FileResponse
-    demo_path = os.path.join(os.path.dirname(__file__), "static", "ai-employee-demo.html")
-    if os.path.exists(demo_path):
-        return FileResponse(demo_path)
-    return {"error": "Demo page not found"}
 
 
 # Static files — MUST be after all API routes

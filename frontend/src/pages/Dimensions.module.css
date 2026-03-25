@@ -95,6 +95,40 @@
   gap: 16px;
 }
 
+/* ─── Level Group (for M class) ───────────────────────────── */
+.levelGroup {
+  margin-bottom: 32px;
+}
+
+.levelGroup:last-child {
+  margin-bottom: 0;
+}
+
+.levelHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.levelTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.levelDivider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.4), transparent);
+}
+
 .loadingHint,
 .emptyHint {
   grid-column: 1 / -1;
